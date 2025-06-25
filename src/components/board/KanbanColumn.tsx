@@ -26,7 +26,7 @@ export default function KanbanColumn({
       ref={setNodeRef}
       className={`p-4 rounded-md w-64 min-w-[16rem] transition
         ${isOver ? 'bg-indigo-100' : 'bg-gray-100'}
-        ${columnId === "todo" ? "bg-gray-100/30" : columnId === "doing" ? "!bg-blue-100/30" : "!bg-green-100/30"}
+        ${columnId === "todo" ? "bg-gray-100 dark:bg-gray-100/30" : columnId === "doing" ? "!bg-blue-100/30" : "!bg-green-100/30"}
       `}
     >
       <h2 className={`text-lg font-semibold capitalize mb-2 ${columnId === "todo" ? "" : columnId === "doing" ? "text-blue-700 dark:text-blue-300" : "text-green-700 dark:text-green-300"}`}>{columnId}</h2>
