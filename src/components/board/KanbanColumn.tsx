@@ -29,7 +29,7 @@ export default function KanbanColumn({
         ${columnId === "todo" ? "bg-gray-100 dark:bg-gray-100/30" : columnId === "doing" ? "!bg-blue-100/30" : "!bg-green-100/30"}
       `}
     >
-      <h2 className={`text-lg font-semibold capitalize mb-2 ${columnId === "todo" ? "" : columnId === "doing" ? "text-blue-700 dark:text-blue-300" : "text-green-700 dark:text-green-300"}`}>{columnId}</h2>
+      <h2 className={`text-lg w-fit px-2 font-semibold capitalize mb-2 rounded-full ${columnId === "todo" ? "bg-gray-800 text-white" : columnId === "doing" ? "bg-blue-700 text-white" : "bg-green-700 text-white"}`}>{columnId}</h2>
 
       <div className='flex flex-col h-[30rem] justify-between'>
         <div className="space-y-2 min-h-[4rem] flex-1 overflow-auto scroll-hide">
