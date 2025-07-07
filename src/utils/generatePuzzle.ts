@@ -8,7 +8,7 @@ const operators = ['+', '-', '×', '÷']
 const transformExpression = (expr: string) => expr.replace(/×/g, '*').replace(/÷/g, '/')
 
 export function generateRandomPuzzle(): Puzzle {
-  const numCount = randomInt(2, 4)
+  const numCount = 3
   const numbers: PuzzleItem[] = []
 
   for (let i = 0; i < numCount; i++) {
@@ -52,7 +52,31 @@ export function generateRandomPuzzle(): Puzzle {
     return generateRandomPuzzle()
   }
 
-  const candidates = [...numbers, ...ops].sort(() => Math.random() - 0.5)
+  const distractors: PuzzleItem[] = []
+  while (distractors.length < 5) {
+    const isNumber = Math.random() < 0.6
+    if (isNumber) {
+      const value = String(randomInt(1,20))
+      if (!numbers.some(n => n.value === value) && !distractors.some(d => d.value === value && d.type === "number")) {
+        distractors.push({
+          id: uuid(),
+          value,
+          type: "number"
+        })
+      }
+    } else {
+      const value = operators[randomInt(0, operators.length - 1)]
+      if (!ops.some(o => o.value === value) && !distractors.some(d => d.value === value && d.type === "operator")) {
+        distractors.push({
+          id: uuid(),
+          value,
+          type: "operator"
+        })
+      }
+    }
+  }
+
+  const candidates = [...numbers, ...ops, ...distractors].sort(() => Math.random() - 0.5)
 
   return {
     id: uuid(),

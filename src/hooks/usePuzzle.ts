@@ -30,10 +30,20 @@ export function usePuzzle() {
   }
 
   const removeItem = (idx: number) => {
-    setDropItems(prev => prev.filter((_, i) => i != idx))
+    setDropItems(prev => {
+      const newItems = [...prev]
+      newItems[idx] = null
+      return newItems
+    })
   }
 
   const checkAnswer = () => {
+    if (dropItems.includes(null)) {
+      setIsCorrect(false)
+      setChecked(true)
+      return
+    }
+    
     const expr = toEvalExpression(dropItems)
     let result: number
 
@@ -51,14 +61,14 @@ export function usePuzzle() {
   }
 
   const nextPuzzle = () => {
-    setPuzzle(generateRandomPuzzle())
-    setDropItems([])
+    setPuzzle(generateRandomPuzzle());
+    setDropItems([null, null, null, null, null])
     setIsCorrect(null)
     setChecked(false)
-  }
+  };
 
   const reset = () => {
-    setDropItems([])
+    setDropItems([null, null, null, null, null])
     setIsCorrect(null)
     setChecked(false)
   }

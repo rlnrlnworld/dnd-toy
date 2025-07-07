@@ -1,10 +1,12 @@
-"use client"
+'use client';
+'use client';
 
-import { usePuzzle } from "@/hooks/usePuzzle";
-import { PuzzleItem } from "@/types/puzzle";
-import { DragEndEvent, DndContext } from "@dnd-kit/core";
-import CandidateCard from "./CandidateCard";
-import DropZone from "./DropZone";
+import type { PuzzleItem } from '@/types/puzzle';
+
+import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { usePuzzle } from '@/hooks/usePuzzle';
+import DropSlot from './DropSlot';
+import CandidateCard from './CandidateCard';
 
 export default function PuzzleGame() {
   const {
@@ -31,35 +33,56 @@ export default function PuzzleGame() {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: '32px 16px' }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '12px' }}>
-          🎯 정답 숫자: <strong>{puzzle.target}</strong>
+      <div className="max-w-2xl mx-auto py-10 px-4 flex flex-col gap-6">
+        <h2 className="text-5xl font-bold text-center">
+          🎯 <span className="text-[#53817f] dark:text-[#f7f0e3]">{puzzle.target}</span>
         </h2>
 
-        <DropZone items={dropItems} onRemove={removeItem} onDrop={handleDrop} />
+        <div className="flex justify-around items-center bg-[#53817f6c] rounded-md p-3">
+          {dropItems.map((item, index) => (
+            <DropSlot
+              key={index}
+              index={index}
+              item={item}
+              onRemove={removeItem}
+            />
+          ))}
+        </div>
 
-        <div
-          style={{
-            marginTop: '24px',
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '12px',
-          }}
-        >
-          {puzzle.candidates.map(item => (
+        <div className="flex flex-wrap justify-center gap-3 items-center p-3 rounded-md bg-[#f7f0e3]">
+          {puzzle.candidates.map((item) => (
             <CandidateCard key={item.id} item={item} />
           ))}
         </div>
 
-        <div style={{ marginTop: '24px', display: 'flex', gap: '8px' }}>
-          <button onClick={checkAnswer}>정답 확인</button>
-          <button onClick={reset}>리셋</button>
-          <button onClick={nextPuzzle}>다음 문제</button>
+        <div className="flex justify-center gap-3 mt-4">
+          <button
+            onClick={checkAnswer}
+            className="bg-[#53817f] text-[#f7f0e3] px-4 py-2 rounded hover:bg-[#416563] transition"
+          >
+            정답 확인
+          </button>
+          <button
+            onClick={reset}
+            className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition text-gray-400"
+          >
+            리셋
+          </button>
+          <button
+            onClick={nextPuzzle}
+            className="bg-[#53817f] text-[#f7f0e3] px-4 py-2 rounded hover:bg-[#416563] transition"
+          >
+            다음 문제
+          </button>
         </div>
 
         {checked && (
-          <div style={{ marginTop: '16px', fontWeight: 'bold' }}>
-            {isCorrect ? '✅ 정답입니다!' : '❌ 오답입니다'}
+          <div
+            className={`text-center font-bold text-xl mt-4 ${
+              isCorrect ? 'text-green-600' : 'text-red-600'
+            }`}
+          >
+            {isCorrect ? '✅ 정답입니다!' : '❌ 오답입니다.'}
           </div>
         )}
       </div>

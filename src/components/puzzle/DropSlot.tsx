@@ -4,10 +4,9 @@ import { useDroppable } from "@dnd-kit/core"
 type DropSlotProps = {
   index: number
   item: PuzzleItem | null
-  onDrop: (index: number, item: PuzzleItem) => void
   onRemove: (index: number) => void
 }
-export default function DropSlot({ index, item, onDrop, onRemove }:DropSlotProps) {
+export default function DropSlot({ index, item, onRemove }: DropSlotProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: `slot-${index}`,
     data: { index }
@@ -18,46 +17,24 @@ export default function DropSlot({ index, item, onDrop, onRemove }:DropSlotProps
   return (
     <div
       ref={setNodeRef}
-      style={{
-        width: 60,
-        height: 80,
-        border: '2px dashed #ccc',
-        borderRadius: '8px',
-        backgroundColor: isOver ? '#eef' : '#f9f9f9',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'relative',
-        fontSize: '1.2rem',
-        fontWeight: 'bold',
-        color: isOperatorSlot ? '#555' : '#000',
-      }}
+      className={`border-2 rounded-md flex items-center justify-center relative text-[#f0e6d3]
+        ${isOperatorSlot ? 'w-16 h-16' : 'w-16 h-20'}
+        ${(isOver || item) ? 'border-[#5e9491] bg-[#5e9491]' : 'border-[#395c5a] bg-[#395c5a]'}`}
     >
       {item ? (
-        <div>
-          {item.value}
+        <>
+        <div className="absolute inset-1 rounded-md border"></div>
+          <span className="text-2xl font-semibold">{item.value}</span>
           <button
             onClick={() => onRemove(index)}
-            style={{
-              position: 'absolute',
-              top: -6,
-              right: -6,
-              width: 18,
-              height: 18,
-              borderRadius: '50%',
-              background: 'red',
-              color: '#fff',
-              fontSize: 10,
-              border: 'none',
-            }}
+            className="ml-2 text-[#5e9491] bg-[#f0e6d3] focus:outline-none absolute right-0 top-0 w-4 h-4 rounded-full flex items-center justify-center -translate-y-2 translate-x-2"
+            aria-label="Remove item"
           >
-            ×
+            &times;
           </button>
-        </div>
+        </>
       ) : (
-        <span style={{ opacity: 0.3 }}>
-          {isOperatorSlot ? '+' : '7'}
-        </span>
+        <span className="text-white text-center font-mono select-none text-xs">Drop here</span>
       )}
     </div>
   )
