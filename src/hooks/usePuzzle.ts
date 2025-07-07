@@ -4,24 +4,29 @@ import { Puzzle, PuzzleItem } from "@/types/puzzle"
 import { generateRandomPuzzle } from "@/utils/generatePuzzle"
 import { useState } from "react"
 
-const toEvalExpression = (items: PuzzleItem[]) => {
-  return items.map( i => {
-    if (i.value === '×') return '*'
-    if (i.value === '÷') return '/'
-    return i.value
-  }).join(' ')
+const toEvalExpression = (items: (PuzzleItem | null)[]) => {
+  return items
+    .filter((i): i is PuzzleItem => i !== null)
+    .map(i => {
+      if (i.value === '×') return '*'
+      if (i.value === '÷') return '/'
+      return i.value
+    }).join(' ')
 }
 
 export function usePuzzle() {
   const [puzzle, setPuzzle] = useState<Puzzle>(() => generateRandomPuzzle())
-  const [dropItems, setDropItems] = useState<PuzzleItem[]>([])
+  const [dropItems, setDropItems] = useState<(PuzzleItem | null)[]>([null, null, null, null, null])
   const [isCorrect, setIsCorrect] = useState<boolean|null>(null)
   const [checked, setChecked] = useState(false)
 
-  const handleDrop = (item: PuzzleItem) => {
-    setDropItems(prev => [...prev, item])
-    setChecked(false)
-    setIsCorrect(null)
+  const handleDrop = (index: number, item: PuzzleItem) => {
+    setDropItems(prev => {
+      if (prev[index]) return prev
+      const newItems = [...prev]
+      newItems[index] = item
+      return newItems
+    })
   }
 
   const removeItem = (idx: number) => {

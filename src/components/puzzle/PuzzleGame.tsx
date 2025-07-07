@@ -21,9 +21,11 @@ export default function PuzzleGame() {
 
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e
-    if (over?.id === "drop-zone") {
-      const item = active.data.current as PuzzleItem
-      if (item) handleDrop(item)
+    const item = active.data.current as PuzzleItem
+    const slotIndex = over?.data?.current?.index
+
+    if (item && typeof slotIndex === 'number') {
+      handleDrop(slotIndex, item)
     }
   }
 
@@ -34,7 +36,7 @@ export default function PuzzleGame() {
           🎯 정답 숫자: <strong>{puzzle.target}</strong>
         </h2>
 
-        <DropZone items={dropItems} onRemove={removeItem} />
+        <DropZone items={dropItems} onRemove={removeItem} onDrop={handleDrop} />
 
         <div
           style={{
