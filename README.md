@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# dnd-toy
 
-## Getting Started
+`@dnd-kit`으로 만든 드래그앤드롭 연습용 토이. Next.js 정적 export로 GitHub Pages에 배포됩니다.
 
-First, run the development server:
+**Live:** https://rlnrlnworld.github.io/dnd-toy/
+
+## 페이지
+
+| 경로 | 내용 |
+| --- | --- |
+| `/` | 두 게임으로 가는 바로가기 타일 |
+| `/board` | 칸반 보드. 할 일 · 진행 중 · 완료 3열. 카드 추가 · 삭제(되돌리기) · 열 내 정렬 · 열 간 이동(드래그 중 실시간 미리보기) |
+| `/puzzle` | 사자성어 퍼즐. 뜻을 보고 4글자 중 비어 있는 3칸을 후보 글자로 채움. 드래그 또는 클릭으로 배치 |
+
+상태는 메모리에만 있어 새로고침하면 초기화됩니다.
+
+## 스택
+
+- Next.js 15 (App Router, `output: "export"`) · React 19 · TypeScript
+- Tailwind CSS v4 · 디자인 토큰은 `src/app/tokens.css` (OKLCH, 라이트/다크)
+- `@dnd-kit/core` · `@dnd-kit/sortable`
+- Storybook 9 · Vitest · Jest (스캐폴딩)
+
+## 개발
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # 정적 export → out/
+npm run storybook  # http://localhost:6006
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> `npm run dev`가 떠 있는 동안 `npm run build`를 돌리면 `.next` 캐시가 깨져 dev 서버가 500을 냅니다. 둘 중 하나만 실행하세요.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 배포
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`main`에 push하면 GitHub Actions(`.github/workflows/deploy.yml`)가 빌드 후 GitHub Pages에 올립니다. 리포 이름이 URL 경로가 되므로 `next.config.ts`에 `basePath: "/dnd-toy"`가 설정되어 있습니다 (production 빌드에만 적용).
 
-## Learn More
+## 구조
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/
+    globals.css        Tailwind 진입점, 토큰을 유틸리티로 노출
+    tokens.css         색 · 간격 · 모션 토큰
+    board/page.tsx
+    puzzle/page.tsx
+  components/
+    board/             SortableBoard · KanbanColumn · BoardCard
+    puzzle/            PuzzleGame · DropSlot · CandidateCard
+  data/idioms.ts       사자성어 · 뜻 목록
+  hooks/usePuzzle.ts   퍼즐 상태 (생성 · 배치 · 채점)
+  utils/generatePuzzle.ts
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+사자성어를 추가하려면 `src/data/idioms.ts`에 `{ word, meaning }`을 넣으면 됩니다. 네 글자여야 합니다.
