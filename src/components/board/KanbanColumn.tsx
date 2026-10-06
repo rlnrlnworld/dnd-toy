@@ -8,7 +8,7 @@ import { useSortable } from '@dnd-kit/sortable'
 
 type CardItem = { id: string; title: string }
 
-type ColumnMeta = { label: string; dot: string; surface: string; over: string; text: string }
+type ColumnMeta = { label: string; dot: string; surface: string; over: string; text: string; empty: string; emptyOver: string }
 
 const COLUMN_META: Record<CardStatus, ColumnMeta> = {
   todo: {
@@ -17,6 +17,8 @@ const COLUMN_META: Record<CardStatus, ColumnMeta> = {
     surface: 'bg-status-todo-soft',
     over: 'border-status-todo',
     text: 'text-status-todo-ink',
+    empty: 'bg-status-todo/15',
+    emptyOver: 'bg-status-todo/30',
   },
   doing: {
     label: '진행 중',
@@ -24,6 +26,8 @@ const COLUMN_META: Record<CardStatus, ColumnMeta> = {
     surface: 'bg-status-doing-soft',
     over: 'border-status-doing',
     text: 'text-status-doing-ink',
+    empty: 'bg-status-doing/15',
+    emptyOver: 'bg-status-doing/30',
   },
   done: {
     label: '완료',
@@ -31,6 +35,8 @@ const COLUMN_META: Record<CardStatus, ColumnMeta> = {
     surface: 'bg-status-done-soft',
     over: 'border-status-done',
     text: 'text-status-done-ink',
+    empty: 'bg-status-done/15',
+    emptyOver: 'bg-status-done/30',
   },
 }
 
@@ -83,7 +89,7 @@ export default function KanbanColumn({
 
       <div className="scroll-hide flex min-h-16 flex-1 flex-col gap-2 px-3 pt-1 md:overflow-y-auto">
         {items.length === 0 ? (
-          <PlaceholderCard id={`${columnId}-placeholder`} active={isOver} activeClass={meta.over} />
+          <PlaceholderCard id={`${columnId}-placeholder`} className={isOver ? meta.emptyOver : meta.empty} />
         ) : (
           items.map(item => (
             <SortableCard
@@ -166,7 +172,7 @@ function SortableCard({
   )
 }
 
-function PlaceholderCard({ id, active, activeClass }: { id: string; active: boolean; activeClass: string }) {
+function PlaceholderCard({ id, className }: { id: string; className: string }) {
   const { setNodeRef, transform, transition, attributes, listeners } = useSortable({ id })
 
   const style = {
@@ -180,9 +186,8 @@ function PlaceholderCard({ id, active, activeClass }: { id: string; active: bool
       style={style}
       {...attributes}
       {...listeners}
-      className={`flex min-h-16 select-none items-center justify-center rounded-card border border-dashed text-xs text-ink-2
-        transition-colors duration-[var(--dur-short)] ease-out
-        ${active ? activeClass : 'border-rule'}`}
+      className={`flex min-h-16 select-none items-center justify-center rounded-card text-xs text-ink-2
+        transition-colors duration-[var(--dur-short)] ease-out ${className}`}
     >
       비어 있음
     </div>
