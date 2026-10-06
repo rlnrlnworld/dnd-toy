@@ -3,82 +3,151 @@
 import { useDroppable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { useState } from 'react'
-import BoardCard from './BoardCard'
+import BoardCard, { CardStatus } from './BoardCard'
 import { useSortable } from '@dnd-kit/sortable'
 
 type CardItem = { id: string; title: string }
+
+type ColumnMeta = { label: string; dot: string; top: string; over: string; text: string; soft: string }
+
+const COLUMN_META: Record<CardStatus, ColumnMeta> = {
+  todo: {
+    label: '할 일',
+    dot: 'bg-status-todo',
+    top: 'border-t-status-todo',
+    over: 'border-status-todo bg-status-todo-soft',
+    text: 'text-status-todo-ink',
+    soft: 'bg-status-todo-soft',
+  },
+  doing: {
+    label: '진행 중',
+    dot: 'bg-status-doing',
+    top: 'border-t-status-doing',
+    over: 'border-status-doing bg-status-doing-soft',
+    text: 'text-status-doing-ink',
+    soft: 'bg-status-doing-soft',
+  },
+  done: {
+    label: '완료',
+    dot: 'bg-status-done',
+    top: 'border-t-status-done',
+    over: 'border-status-done bg-status-done-soft',
+    text: 'text-status-done-ink',
+    soft: 'bg-status-done-soft',
+  },
+}
 
 export default function KanbanColumn({
   columnId,
   items,
   onAdd,
+  onDelete,
 }: {
   columnId: string
   items: CardItem[]
   onAdd: (text: string) => void
+  onDelete?: (id: string) => void
 }) {
   const [newCard, setNewCard] = useState('')
+  const [invalid, setInvalid] = useState(false)
 
   const { setNodeRef, isOver } = useDroppable({ id: columnId })
+  const status = (columnId in COLUMN_META ? columnId : 'todo') as CardStatus
+  const meta = COLUMN_META[status]
+  const headingId = `${columnId}-heading`
+
+  const submit = () => {
+    const text = newCard.trim()
+    if (!text) {
+      setInvalid(true)
+      return
+    }
+    onAdd(text)
+    setNewCard('')
+    setInvalid(false)
+  }
 
   return (
-    <div
+    <section
       ref={setNodeRef}
-      className={`p-4 rounded-md w-64 min-w-[16rem] transition
-        ${isOver ? 'bg-indigo-100' : 'bg-gray-100'}
-        ${columnId === "todo" ? "bg-gray-100 dark:bg-gray-100/30" : columnId === "doing" ? "!bg-blue-100/30" : "!bg-green-100/30"}
-      `}
+      aria-labelledby={headingId}
+      className={`flex min-w-0 flex-col rounded-col border border-t-[3px] transition-colors duration-[var(--dur-short)] ease-out md:h-[32rem]
+        ${isOver ? meta.over : `border-rule bg-paper-2 ${meta.top}`}`}
     >
-      <h2 className={`text-lg w-fit px-2 font-semibold capitalize mb-2 rounded-full ${columnId === "todo" ? "bg-gray-800 text-white" : columnId === "doing" ? "bg-blue-700 text-white" : "bg-green-700 text-white"}`}>{columnId}</h2>
+      <div className="flex items-center gap-2 px-4 pt-4 pb-3">
+        <span aria-hidden="true" className={`size-2 rounded-full ${meta.dot}`} />
+        <h2 id={headingId} className={`text-sm font-semibold ${meta.text}`}>
+          {meta.label}
+        </h2>
+        <span className={`ml-auto rounded-full px-2 py-0.5 font-mono text-xs tabular-nums ${meta.soft} ${meta.text}`}>
+          {items.length}
+        </span>
+      </div>
 
-      <div className='flex flex-col h-[30rem] justify-between'>
-        <div className="space-y-2 min-h-[4rem] flex-1 overflow-auto scroll-hide">
+      <div className="scroll-hide flex min-h-16 flex-1 flex-col gap-2 px-3 md:overflow-y-auto">
         {items.length === 0 ? (
-          <PlaceholderCard id={`${columnId}-placeholder`} />
+          <PlaceholderCard id={`${columnId}-placeholder`} active={isOver} activeClass={meta.over} />
         ) : (
           items.map(item => (
-            <SortableCard key={item.id} id={item.id} title={item.title} />
+            <SortableCard
+              key={item.id}
+              id={item.id}
+              title={item.title}
+              status={status}
+              onDelete={onDelete ? () => onDelete(item.id) : undefined}
+            />
           ))
         )}
       </div>
 
-      <input
-        className="border px-2 py-1 rounded text-sm w-full mt-3"
-        placeholder="카드 추가"
-        value={newCard}
-        onChange={e => setNewCard(e.target.value)}
-        onKeyDown={e => {
-          if (e.key === 'Enter' && newCard.trim()) {
-            onAdd(newCard.trim())
-            setNewCard('')
-          }
+      <form
+        className="px-3 pt-2 pb-3"
+        onSubmit={e => {
+          e.preventDefault()
+          submit()
         }}
-      />
-      </div>
-    </div>
+      >
+        <label htmlFor={`${columnId}-new`} className="sr-only">
+          {meta.label}에 카드 추가
+        </label>
+        <input
+          id={`${columnId}-new`}
+          className="w-full rounded-lg border border-rule bg-paper-3 px-3 py-2 text-sm text-ink placeholder:text-ink-2
+            transition-colors duration-[var(--dur-micro)] ease-out
+            hover:border-rule-strong
+            focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus
+            aria-invalid:border-error
+            disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder="+ 카드 추가"
+          value={newCard}
+          aria-invalid={invalid || undefined}
+          onChange={e => {
+            setNewCard(e.target.value)
+            if (invalid) setInvalid(false)
+          }}
+        />
+        {invalid && (
+          <p role="alert" className="mt-1 px-1 text-xs text-error">
+            내용을 입력하세요
+          </p>
+        )}
+      </form>
+    </section>
   )
 }
 
-
-function SortableCard({ id, title }: { id: string; title: string }) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  }
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <BoardCard title={title} />
-    </div>
-  )
-}
-
-function PlaceholderCard({ id }: { id: string }) {
-  const { setNodeRef, transform, transition, attributes, listeners } =
-    useSortable({ id })
+function SortableCard({
+  id,
+  title,
+  status,
+  onDelete,
+}: {
+  id: string
+  title: string
+  status: CardStatus
+  onDelete?: () => void
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -91,9 +160,34 @@ function PlaceholderCard({ id }: { id: string }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="h-10 border-2 border-dashed rounded opacity-10 flex items-center justify-center text-sm text-gray-500"
+      className={`group touch-none rounded-card cursor-grab active:cursor-grabbing
+        focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus
+        ${isDragging ? 'opacity-40' : 'opacity-100'}`}
     >
-      Drop here
+      <BoardCard title={title} status={status} onDelete={onDelete} />
+    </div>
+  )
+}
+
+function PlaceholderCard({ id, active, activeClass }: { id: string; active: boolean; activeClass: string }) {
+  const { setNodeRef, transform, transition, attributes, listeners } = useSortable({ id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`flex min-h-16 select-none items-center justify-center rounded-card border border-dashed text-xs text-ink-2
+        transition-colors duration-[var(--dur-short)] ease-out
+        ${active ? activeClass : 'border-rule'}`}
+    >
+      비어 있음
     </div>
   )
 }

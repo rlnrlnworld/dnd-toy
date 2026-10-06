@@ -1,8 +1,9 @@
 @import "tailwindcss";
+@import "./tokens.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: var(--hm-paper);
+  --foreground: var(--hm-ink);
 }
 
 @theme inline {
@@ -10,21 +11,57 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-paper: var(--hm-paper);
+  --color-paper-2: var(--hm-paper-2);
+  --color-paper-3: var(--hm-paper-3);
+  --color-rule: var(--hm-rule);
+  --color-rule-strong: var(--hm-rule-strong);
+  --color-ink: var(--hm-ink);
+  --color-ink-2: var(--hm-ink-2);
+  --color-accent: var(--hm-accent);
+  --color-focus: var(--hm-focus);
+  --color-error: var(--hm-error);
+  --color-status-todo: var(--hm-status-todo);
+  --color-status-todo-ink: var(--hm-status-todo-ink);
+  --color-status-todo-soft: var(--hm-status-todo-soft);
+  --color-status-doing: var(--hm-status-doing);
+  --color-status-doing-ink: var(--hm-status-doing-ink);
+  --color-status-doing-soft: var(--hm-status-doing-soft);
+  --color-status-done: var(--hm-status-done);
+  --color-status-done-ink: var(--hm-status-done-ink);
+  --color-status-done-soft: var(--hm-status-done-soft);
+
+  --shadow-whisper: var(--hm-shadow-whisper);
+  --shadow-lift: var(--hm-shadow-lift);
+  --radius-card: var(--hm-radius-card);
+  --radius-col: var(--hm-radius-col);
+  --ease-out: var(--ease-out);
+  --ease-in: var(--ease-in);
+  --ease-in-out: var(--ease-in-out);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
 .scroll-hide::-webkit-scrollbar {
   display: none;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 150ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 150ms !important;
+  }
 }

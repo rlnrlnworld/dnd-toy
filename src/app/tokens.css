@@ -1,0 +1,71 @@
+/* Hallmark · component: kanban-board · genre: playful · theme: custom (amber on warm paper)
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * contrast: pass (46–50)
+ * axes: light paper / geometric-sans (Geist) / warm accent (hue 85)
+ */
+:root {
+  --hm-paper:        oklch(97% 0.012 85);
+  --hm-paper-2:      oklch(94% 0.016 85);
+  --hm-paper-3:      oklch(99% 0.006 85);
+  --hm-rule:         oklch(87% 0.014 85);
+  --hm-rule-strong:  oklch(72% 0.016 85);
+  --hm-ink:          oklch(20% 0.012 70);
+  --hm-ink-2:        oklch(48% 0.012 75);
+  --hm-accent:       oklch(84% 0.150 85);
+  --hm-focus:        oklch(62% 0.150 70);
+  --hm-error:        oklch(58% 0.180 25);
+
+  --hm-status-todo:       oklch(62% 0.020 80);
+  --hm-status-todo-ink:   oklch(42% 0.020 80);
+  --hm-status-todo-soft:  oklch(92% 0.012 80);
+  --hm-status-doing:      oklch(78% 0.150 85);
+  --hm-status-doing-ink:  oklch(48% 0.120 75);
+  --hm-status-doing-soft: oklch(93% 0.060 90);
+  --hm-status-done:       oklch(66% 0.120 150);
+  --hm-status-done-ink:   oklch(44% 0.110 150);
+  --hm-status-done-soft:  oklch(93% 0.050 150);
+
+  --hm-shadow-whisper: 0 1px 2px oklch(20% 0.02 80 / 0.06);
+  --hm-shadow-lift:    0 8px 24px -10px oklch(30% 0.04 80 / 0.35);
+
+  --hm-radius-card: 10px;
+  --hm-radius-col:  14px;
+
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long:  420ms;
+
+  --z-raised: 10;
+  --z-toast:  500;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --hm-paper:        oklch(15% 0.010 80);
+    --hm-paper-2:      oklch(18% 0.012 80);
+    --hm-paper-3:      oklch(22% 0.012 80);
+    --hm-rule:         oklch(30% 0.012 80);
+    --hm-rule-strong:  oklch(44% 0.014 80);
+    --hm-ink:          oklch(93% 0.008 85);
+    --hm-ink-2:        oklch(68% 0.010 80);
+    --hm-accent:       oklch(86% 0.130 85);
+    --hm-focus:        oklch(80% 0.140 80);
+    --hm-error:        oklch(70% 0.160 25);
+
+    --hm-status-todo:       oklch(58% 0.020 80);
+    --hm-status-todo-ink:   oklch(72% 0.020 80);
+    --hm-status-todo-soft:  oklch(24% 0.012 80);
+    --hm-status-doing:      oklch(82% 0.130 85);
+    --hm-status-doing-ink:  oklch(84% 0.120 85);
+    --hm-status-doing-soft: oklch(27% 0.050 85);
+    --hm-status-done:       oklch(72% 0.100 150);
+    --hm-status-done-ink:   oklch(78% 0.100 150);
+    --hm-status-done-soft:  oklch(25% 0.040 150);
+
+    --hm-shadow-whisper: 0 1px 2px oklch(5% 0.01 80 / 0.4);
+    --hm-shadow-lift:    0 8px 24px -10px oklch(5% 0.01 80 / 0.8);
+  }
+}
