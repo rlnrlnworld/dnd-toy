@@ -20,10 +20,10 @@
   --hm-status-todo-soft:  oklch(92% 0.012 80);
   --hm-status-doing:      oklch(78% 0.150 85);
   --hm-status-doing-ink:  oklch(48% 0.120 75);
-  --hm-status-doing-soft: oklch(93% 0.060 90);
+  --hm-status-doing-soft: oklch(94% 0.045 90);
   --hm-status-done:       oklch(66% 0.120 150);
   --hm-status-done-ink:   oklch(44% 0.110 150);
-  --hm-status-done-soft:  oklch(93% 0.050 150);
+  --hm-status-done-soft:  oklch(94% 0.040 150);
 
   --hm-shadow-whisper: 0 1px 2px oklch(20% 0.02 80 / 0.06);
   --hm-shadow-lift:    0 8px 24px -10px oklch(30% 0.04 80 / 0.35);
@@ -60,10 +60,10 @@
     --hm-status-todo-soft:  oklch(24% 0.012 80);
     --hm-status-doing:      oklch(82% 0.130 85);
     --hm-status-doing-ink:  oklch(84% 0.120 85);
-    --hm-status-doing-soft: oklch(27% 0.050 85);
+    --hm-status-doing-soft: oklch(22% 0.028 85);
     --hm-status-done:       oklch(72% 0.100 150);
     --hm-status-done-ink:   oklch(78% 0.100 150);
-    --hm-status-done-soft:  oklch(25% 0.040 150);
+    --hm-status-done-soft:  oklch(21% 0.028 150);
 
     --hm-shadow-whisper: 0 1px 2px oklch(5% 0.01 80 / 0.4);
     --hm-shadow-lift:    0 8px 24px -10px oklch(5% 0.01 80 / 0.8);

@@ -7,8 +7,15 @@ type BoardCardProps = {
   onDelete?: () => void
 }
 
+const STATUS_STYLE: Record<CardStatus, { hoverBorder: string; grip: string }> = {
+  todo: { hoverBorder: 'group-hover:border-status-todo', grip: 'fill-status-todo' },
+  doing: { hoverBorder: 'group-hover:border-status-doing', grip: 'fill-status-doing' },
+  done: { hoverBorder: 'group-hover:border-status-done', grip: 'fill-status-done' },
+}
+
 export default function BoardCard({ title, status = 'todo', overlay = false, onDelete }: BoardCardProps) {
   const isDone = status === 'done'
+  const st = STATUS_STYLE[status]
 
   return (
     <div
@@ -17,13 +24,13 @@ export default function BoardCard({ title, status = 'todo', overlay = false, onD
         ${isDone ? 'text-ink-2 line-through decoration-rule-strong' : 'text-ink'}
         ${overlay
           ? 'cursor-grabbing border-rule-strong shadow-lift'
-          : 'border-rule shadow-whisper group-hover:-translate-y-px group-hover:border-rule-strong'
+          : `border-rule shadow-whisper group-hover:-translate-y-px ${st.hoverBorder}`
         }`}
     >
       <svg
         aria-hidden="true"
         viewBox="0 0 10 16"
-        className={`mt-[3px] size-3.5 shrink-0 fill-ink-2 transition-opacity duration-[var(--dur-micro)] ease-out
+        className={`mt-[3px] size-3.5 shrink-0 ${st.grip} transition-opacity duration-[var(--dur-micro)] ease-out
           ${overlay ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'}`}
       >
         <circle cx="3" cy="3" r="1.4" />

@@ -8,32 +8,29 @@ import { useSortable } from '@dnd-kit/sortable'
 
 type CardItem = { id: string; title: string }
 
-type ColumnMeta = { label: string; dot: string; top: string; over: string; text: string; soft: string }
+type ColumnMeta = { label: string; dot: string; surface: string; over: string; text: string }
 
 const COLUMN_META: Record<CardStatus, ColumnMeta> = {
   todo: {
     label: '할 일',
     dot: 'bg-status-todo',
-    top: 'border-t-status-todo',
-    over: 'border-status-todo bg-status-todo-soft',
+    surface: 'bg-status-todo-soft',
+    over: 'border-status-todo',
     text: 'text-status-todo-ink',
-    soft: 'bg-status-todo-soft',
   },
   doing: {
     label: '진행 중',
     dot: 'bg-status-doing',
-    top: 'border-t-status-doing',
-    over: 'border-status-doing bg-status-doing-soft',
+    surface: 'bg-status-doing-soft',
+    over: 'border-status-doing',
     text: 'text-status-doing-ink',
-    soft: 'bg-status-doing-soft',
   },
   done: {
     label: '완료',
     dot: 'bg-status-done',
-    top: 'border-t-status-done',
-    over: 'border-status-done bg-status-done-soft',
+    surface: 'bg-status-done-soft',
+    over: 'border-status-done',
     text: 'text-status-done-ink',
-    soft: 'bg-status-done-soft',
   },
 }
 
@@ -71,15 +68,15 @@ export default function KanbanColumn({
     <section
       ref={setNodeRef}
       aria-labelledby={headingId}
-      className={`flex min-w-0 flex-col rounded-col border border-t-[3px] transition-colors duration-[var(--dur-short)] ease-out md:h-[32rem]
-        ${isOver ? meta.over : `border-rule bg-paper-2 ${meta.top}`}`}
+      className={`flex min-w-0 flex-col rounded-col border transition-colors duration-[var(--dur-short)] ease-out md:h-[32rem]
+        ${meta.surface} ${isOver ? meta.over : 'border-rule'}`}
     >
       <div className="flex items-center gap-2 px-4 pt-4 pb-3">
         <span aria-hidden="true" className={`size-2 rounded-full ${meta.dot}`} />
         <h2 id={headingId} className={`text-sm font-semibold ${meta.text}`}>
           {meta.label}
         </h2>
-        <span className={`ml-auto rounded-full px-2 py-0.5 font-mono text-xs tabular-nums ${meta.soft} ${meta.text}`}>
+        <span className={`ml-auto rounded-full border border-rule bg-paper-3 px-2 py-0.5 font-mono text-xs tabular-nums ${meta.text}`}>
           {items.length}
         </span>
       </div>
