@@ -71,7 +71,7 @@ export default function KanbanColumn({
       className={`flex min-w-0 flex-col rounded-col border transition-colors duration-[var(--dur-short)] ease-out md:h-[32rem]
         ${meta.surface} ${isOver ? meta.over : 'border-rule'}`}
     >
-      <div className="flex items-center gap-2 px-4 pt-4 pb-3">
+      <div className="flex items-center gap-2 px-4 pt-4 pb-2">
         <span aria-hidden="true" className={`size-2 rounded-full ${meta.dot}`} />
         <h2 id={headingId} className={`text-sm font-semibold ${meta.text}`}>
           {meta.label}
@@ -81,7 +81,7 @@ export default function KanbanColumn({
         </span>
       </div>
 
-      <div className="scroll-hide flex min-h-16 flex-1 flex-col gap-2 px-3 md:overflow-y-auto">
+      <div className="scroll-hide flex min-h-16 flex-1 flex-col gap-2 px-3 pt-1 md:overflow-y-auto">
         {items.length === 0 ? (
           <PlaceholderCard id={`${columnId}-placeholder`} active={isOver} activeClass={meta.over} />
         ) : (
