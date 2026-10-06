@@ -1,7 +1,9 @@
+export type PuzzleItemType = "number" | "operator"
+
 export type PuzzleItem = {
   id: string
   value: string
-  type: "number" | "operator"
+  type: PuzzleItemType
 }
 
 export type Puzzle = {
@@ -9,3 +11,6 @@ export type Puzzle = {
   target: number
   candidates: PuzzleItem[]
 }
+
+/** 슬롯 순서: 숫자 · 연산 · 숫자 · 연산 · 숫자 */
+export const SLOT_TYPES: readonly PuzzleItemType[] = ["number", "operator", "number", "operator", "number"]

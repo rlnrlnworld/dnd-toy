@@ -31,6 +31,10 @@
   --color-status-done: var(--hm-status-done);
   --color-status-done-ink: var(--hm-status-done-ink);
   --color-status-done-soft: var(--hm-status-done-soft);
+  --color-puzzle: var(--hm-puzzle);
+  --color-puzzle-ink: var(--hm-puzzle-ink);
+  --color-puzzle-soft: var(--hm-puzzle-soft);
+  --color-success: var(--hm-success);
 
   --shadow-whisper: var(--hm-shadow-whisper);
   --shadow-lift: var(--hm-shadow-lift);

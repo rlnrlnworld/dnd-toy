@@ -3,38 +3,39 @@ import { useDraggable } from "@dnd-kit/core"
 
 type CandidateCardProps = {
   item: PuzzleItem
+  onPick?: (item: PuzzleItem) => void
+  overlay?: boolean
 }
-export default function CandidateCard({ item }: CandidateCardProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: item.id,
-    data: item
-  })
 
-  const isOperator = item.type === "operator"
+export const candidateShape = (type: PuzzleItem["type"]) =>
+  type === "operator" ? "size-12 rounded-full" : "h-16 w-14 rounded-card"
+
+export const candidateTone = (type: PuzzleItem["type"]) =>
+  type === "operator"
+    ? "border-puzzle bg-puzzle-soft text-puzzle-ink"
+    : "border-rule bg-paper-3 text-ink"
+
+export default function CandidateCard({ item, onPick, overlay = false }: CandidateCardProps) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: item.id, data: item })
 
   return (
-    <div
+    <button
       ref={setNodeRef}
+      type="button"
+      aria-label={`${item.type === "operator" ? "연산" : "숫자"} ${item.value}`}
+      onClick={() => onPick?.(item)}
       {...attributes}
       {...listeners}
-      className={`
-        relative
-        select-none cursor-grab text-center font-semibold text-2xl 
-        flex items-center justify-center
-        ${isOperator ? 'w-16 h-16' : 'w-16 h-20'}
-        ${isDragging ? 'opacity-50' : 'opacity-100'}
-        bg-[#5e9491] fon-mono rounded-md shadow-sm
-        hover:border hover:border-[#f0e6d3]  hover:bg-[#53817f]
-        transition-colors duration-200 text-[#f0e6d3]
-      `}
-      style={{
-        transform: transform
-        ? `translate(${transform.x}px, ${transform.y}px)`
-        : undefined,
-      }}
+      className={`flex touch-none select-none items-center justify-center border font-mono text-2xl font-semibold tabular-nums
+        transition-[transform,box-shadow,border-color,opacity] duration-[var(--dur-micro)] ease-out
+        ${candidateShape(item.type)} ${candidateTone(item.type)}
+        ${overlay
+          ? "cursor-grabbing shadow-lift"
+          : "cursor-grab shadow-whisper hover:-translate-y-px hover:border-puzzle active:translate-y-0 active:cursor-grabbing"}
+        ${isDragging && !overlay ? "opacity-30" : "opacity-100"}
+        focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus`}
     >
-      <div className="absolute inset-1 border border-[#f0e6d3] rounded-md"></div>
       {item.value}
-    </div>
+    </button>
   )
 }
