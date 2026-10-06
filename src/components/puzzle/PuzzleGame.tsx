@@ -16,12 +16,14 @@ const btnSecondary = `${btnBase} border border-rule bg-paper-3 text-ink hover:bo
 const btnGhost = `${btnBase} text-ink-2 hover:bg-paper-2 hover:text-ink`
 
 export default function PuzzleGame() {
-  const { puzzle, slots, remaining, isComplete, result, computed, solved, place, placeAuto, remove, check, reset, next } = usePuzzle()
+  const { puzzle, slots, remaining, isComplete, isEmptyExceptFixed, isFixed, result, solved, revealed, place, placeAuto, remove, check, reset, reveal, next } = usePuzzle()
   const [active, setActive] = useState<PuzzleItem | null>(null)
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }))
 
   if (!puzzle) return <main className="min-h-dvh" aria-busy="true" />
+
+  const locked = result === "correct" || revealed
 
   const handleDragStart = (e: DragStartEvent) => setActive(e.active.data.current as PuzzleItem)
   const handleDragEnd = (e: DragEndEvent) => {
@@ -48,54 +50,63 @@ export default function PuzzleGame() {
                 <path d="M10 3L5 8l5 5" />
               </svg>
             </Link>
-            <h1 className="text-2xl font-semibold tracking-[-0.025em] text-ink md:text-3xl">수식 퍼즐</h1>
+            <h1 className="text-2xl font-semibold tracking-[-0.025em] text-ink md:text-3xl">사자성어 퍼즐</h1>
           </div>
           <p className="font-mono text-sm tabular-nums text-ink-2">
             맞힌 문제 <span className="text-ink">{solved}</span>
           </p>
         </header>
 
-        <section aria-label="수식 자리" className="flex flex-col gap-3 rounded-col bg-puzzle-soft px-4 py-6 md:px-6 md:py-8">
-          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
+        <section aria-label="문제" className="flex flex-col gap-6 rounded-col bg-puzzle-soft px-4 py-6 md:px-8 md:py-8">
+          <div className="flex flex-col gap-1">
+            <p className="text-xs text-puzzle-ink">뜻</p>
+            <p className="text-base leading-relaxed text-ink md:text-lg">{puzzle.meaning}</p>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 md:gap-3">
             {slots.map((item, index) => (
               <DropSlot
                 key={index}
                 index={index}
                 item={item}
-                draggingType={active?.type ?? null}
+                fixed={isFixed(index)}
+                dragging={active !== null}
+                locked={locked}
                 result={result}
                 onRemove={remove}
               />
             ))}
-            <span aria-hidden="true" className="ml-1 font-mono text-3xl text-ink-2">=</span>
-            <span aria-label={`목표 수 ${puzzle.target}`} className="font-mono text-4xl font-semibold tabular-nums tracking-[-0.03em] text-puzzle-ink md:text-5xl">
-              {puzzle.target}
-            </span>
           </div>
+
           <p role="status" aria-live="polite" className="min-h-5 text-center text-sm">
             {result === "correct" && <span className="font-semibold text-success">정답</span>}
-            {result === "wrong" && (
-              <span className="text-error">
-                {computed === null ? "계산할 수 없는 식" : `계산 결과 ${Number.isInteger(computed) ? computed : computed.toFixed(2)}`} · 다시 시도
-              </span>
-            )}
-            {result === "idle" && !isComplete && <span className="text-ink-2">후보를 끌어오거나 눌러서 채우세요</span>}
+            {result === "wrong" && <span className="text-error">틀렸어요 · 다시 시도</span>}
+            {revealed && result === "idle" && <span className="text-puzzle-ink">정답은 「{puzzle.word}」</span>}
+            {!revealed && result === "idle" && !isComplete && <span className="text-ink-2">글자를 끌어오거나 눌러서 채우세요</span>}
           </p>
         </section>
 
-        <section aria-label="후보" className="flex min-h-20 flex-wrap items-center justify-center gap-2 md:gap-3">
-          {remaining.map(item => (
-            <CandidateCard key={item.id} item={item} onPick={placeAuto} />
-          ))}
-          {remaining.length === 0 && <p className="text-sm text-ink-2">후보를 모두 사용했어요</p>}
+        <section aria-label="후보 글자" className="flex min-h-16 flex-col items-center">
+          {remaining.length > 0 ? (
+            <div className="grid grid-cols-4 gap-2 md:gap-3">
+              {remaining.map(item => (
+                <CandidateCard key={item.id} item={item} onPick={locked ? undefined : placeAuto} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-ink-2">후보를 모두 사용했어요</p>
+          )}
         </section>
 
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <button type="button" onClick={check} disabled={!isComplete || result === "correct"} className={btnPrimary}>
+          <button type="button" onClick={check} disabled={!isComplete || locked} className={btnPrimary}>
             정답 확인
           </button>
-          <button type="button" onClick={reset} disabled={slots.every(s => s === null)} className={btnGhost}>
+          <button type="button" onClick={reset} disabled={isEmptyExceptFixed && !revealed} className={btnGhost}>
             리셋
+          </button>
+          <button type="button" onClick={reveal} disabled={locked} className={btnGhost}>
+            정답 보기
           </button>
           <button type="button" onClick={next} className={btnSecondary}>
             다음 문제

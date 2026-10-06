@@ -1,35 +1,40 @@
 "use client"
 
-import { Puzzle, PuzzleItem, SLOT_TYPES } from "@/types/puzzle"
-import { evaluateTokens } from "@/utils/evaluate"
+import { Puzzle, PuzzleItem, WORD_LENGTH } from "@/types/puzzle"
 import { generateRandomPuzzle } from "@/utils/generatePuzzle"
 import { useEffect, useMemo, useState } from "react"
 
 export type PuzzleResult = "idle" | "correct" | "wrong"
 
-const emptySlots = (): (PuzzleItem | null)[] => SLOT_TYPES.map(() => null)
+const slotsFor = (puzzle: Puzzle): (PuzzleItem | null)[] =>
+  Array.from({ length: WORD_LENGTH }, (_, i) => (i === puzzle.fixedIndex ? puzzle.fixed : null))
 
 export function usePuzzle() {
   // 랜덤 생성은 클라이언트 마운트 후에만 (SSR hydration 불일치 방지)
   const [puzzle, setPuzzle] = useState<Puzzle | null>(null)
-  useEffect(() => setPuzzle(generateRandomPuzzle()), [])
-  const [slots, setSlots] = useState<(PuzzleItem | null)[]>(emptySlots)
+  const [slots, setSlots] = useState<(PuzzleItem | null)[]>([])
   const [result, setResult] = useState<PuzzleResult>("idle")
-  const [computed, setComputed] = useState<number | null>(null)
   const [solved, setSolved] = useState(0)
+  const [revealed, setRevealed] = useState(false)
 
-  /** 슬롯에 이미 들어간 후보는 후보열에서 제외 */
+  useEffect(() => {
+    const p = generateRandomPuzzle()
+    setPuzzle(p)
+    setSlots(slotsFor(p))
+  }, [])
+
+  /** 슬롯에 들어간 후보는 후보열에서 제외 */
   const remaining = useMemo(
     () => (puzzle?.candidates ?? []).filter(c => !slots.some(s => s?.id === c.id)),
     [puzzle, slots]
   )
 
-  const isComplete = slots.every(Boolean)
-
-  const canPlace = (index: number, item: PuzzleItem) => SLOT_TYPES[index] === item.type
+  const isComplete = slots.length === WORD_LENGTH && slots.every(Boolean)
+  const isFixed = (index: number) => puzzle?.fixedIndex === index
+  const isEmptyExceptFixed = slots.every((s, i) => isFixed(i) || s === null)
 
   const place = (index: number, item: PuzzleItem) => {
-    if (!canPlace(index, item)) return false
+    if (!puzzle || isFixed(index) || result === "correct") return false
     setSlots(prev => {
       const next = [...prev]
       const already = next.findIndex(s => s?.id === item.id)
@@ -41,14 +46,15 @@ export function usePuzzle() {
     return true
   }
 
-  /** 클릭 배치: 타입이 맞는 첫 빈 슬롯 */
+  /** 클릭 배치: 고정 칸을 제외한 첫 빈 칸 */
   const placeAuto = (item: PuzzleItem) => {
-    const index = slots.findIndex((s, i) => s === null && SLOT_TYPES[i] === item.type)
+    const index = slots.findIndex((s, i) => s === null && !isFixed(i))
     if (index === -1) return false
     return place(index, item)
   }
 
   const remove = (index: number) => {
+    if (isFixed(index) || result === "correct") return
     setSlots(prev => {
       const next = [...prev]
       next[index] = null
@@ -59,23 +65,42 @@ export function usePuzzle() {
 
   const check = () => {
     if (!isComplete || !puzzle) return
-    const value = evaluateTokens(slots as PuzzleItem[])
-    setComputed(value)
-    const correct = value !== null && Math.abs(value - puzzle.target) < 1e-9
+    const answer = slots.map(s => s!.value).join("")
+    const correct = answer === puzzle.word
     if (correct && result !== "correct") setSolved(n => n + 1)
     setResult(correct ? "correct" : "wrong")
   }
 
   const reset = () => {
-    setSlots(emptySlots())
+    if (puzzle) setSlots(slotsFor(puzzle))
     setResult("idle")
-    setComputed(null)
+    setRevealed(false)
+  }
+
+  /** 정답 공개: 후보에 있는 글자는 후보 아이템을 그대로 써서 후보열에서 빠지게 함 */
+  const reveal = () => {
+    if (!puzzle) return
+    const used = new Set<string>()
+    setSlots(puzzle.word.split("").map((ch, i) => {
+      if (i === puzzle.fixedIndex) return puzzle.fixed
+      const c = puzzle.candidates.find(c => c.value === ch && !used.has(c.id))
+      if (c) {
+        used.add(c.id)
+        return c
+      }
+      return { id: `reveal-${i}`, value: ch }
+    }))
+    setRevealed(true)
+    setResult("idle")
   }
 
   const next = () => {
-    setPuzzle(generateRandomPuzzle())
-    reset()
+    const p = generateRandomPuzzle(puzzle?.word)
+    setPuzzle(p)
+    setSlots(slotsFor(p))
+    setResult("idle")
+    setRevealed(false)
   }
 
-  return { puzzle, slots, remaining, isComplete, result, computed, solved, canPlace, place, placeAuto, remove, check, reset, next }
+  return { puzzle, slots, remaining, isComplete, isEmptyExceptFixed, isFixed, result, solved, revealed, place, placeAuto, remove, check, reset, reveal, next }
 }

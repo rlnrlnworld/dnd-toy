@@ -13,7 +13,7 @@ export default function Home() {
           <h1 className="text-[#fdc453] dark:text-[#f6b229] group-hover:text-[#f8ab10] font-bold text-3xl">Kanban</h1>
         </div>
         <div onClick={() => router.push("/puzzle")} className="w-40 h-50 rounded-md bg-black dark:border dark:border-white px-6 py-6 flex flex-col justify-between group dark:hover:bg-white/20 hover:!cursor-pointer">
-          {/* 숫자 퍼즐 */}
+          {/* 사자성어 퍼즐 */}
           <svg className="w-20 h-20" viewBox="0 0 1129 1129" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M1128 564.496C1130 625.993 898.773 625.996 579 625.996C259.227 625.996 3.69549e-06 625.996 0 564.496C-3.69549e-06 502.996 259.227 502.996 579 502.996C898.773 502.996 1126 503 1128 564.496Z" fill="#7BB1AC"/>
             <path d="M1108.78 418.524C1126.63 477.407 903.283 537.257 594.406 620.02C285.53 702.783 35.1354 769.876 19.218 710.472C3.30066 651.067 253.695 583.974 562.572 501.211C871.449 418.448 1090.93 359.64 1108.78 418.524Z" fill="#7BB1AC"/>

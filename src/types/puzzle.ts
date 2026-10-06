@@ -1,16 +1,16 @@
-export type PuzzleItemType = "number" | "operator"
-
 export type PuzzleItem = {
   id: string
   value: string
-  type: PuzzleItemType
 }
 
 export type Puzzle = {
   id: string
-  target: number
+  word: string
+  meaning: string
+  /** 처음부터 채워져 있는 글자의 자리 (0–3) */
+  fixedIndex: number
+  fixed: PuzzleItem
   candidates: PuzzleItem[]
 }
 
-/** 슬롯 순서: 숫자 · 연산 · 숫자 · 연산 · 숫자 */
-export const SLOT_TYPES: readonly PuzzleItemType[] = ["number", "operator", "number", "operator", "number"]
+export const WORD_LENGTH = 4

@@ -7,13 +7,7 @@ type CandidateCardProps = {
   overlay?: boolean
 }
 
-export const candidateShape = (type: PuzzleItem["type"]) =>
-  type === "operator" ? "size-12 rounded-full" : "h-16 w-14 rounded-card"
-
-export const candidateTone = (type: PuzzleItem["type"]) =>
-  type === "operator"
-    ? "border-puzzle bg-puzzle-soft text-puzzle-ink"
-    : "border-rule bg-paper-3 text-ink"
+export const tileShape = "size-14 rounded-card md:size-16"
 
 export default function CandidateCard({ item, onPick, overlay = false }: CandidateCardProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: item.id, data: item })
@@ -22,13 +16,13 @@ export default function CandidateCard({ item, onPick, overlay = false }: Candida
     <button
       ref={setNodeRef}
       type="button"
-      aria-label={`${item.type === "operator" ? "연산" : "숫자"} ${item.value}`}
+      aria-label={`글자 ${item.value}`}
       onClick={() => onPick?.(item)}
       {...attributes}
       {...listeners}
-      className={`flex touch-none select-none items-center justify-center border font-mono text-2xl font-semibold tabular-nums
+      className={`flex touch-none select-none items-center justify-center border border-rule bg-paper-3 text-2xl font-semibold text-ink
         transition-[transform,box-shadow,border-color,opacity] duration-[var(--dur-micro)] ease-out
-        ${candidateShape(item.type)} ${candidateTone(item.type)}
+        ${tileShape}
         ${overlay
           ? "cursor-grabbing shadow-lift"
           : "cursor-grab shadow-whisper hover:-translate-y-px hover:border-puzzle active:translate-y-0 active:cursor-grabbing"}

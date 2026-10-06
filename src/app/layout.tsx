@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "dnd-toy",
-  description: "드래그앤드롭 토이: 칸반 보드와 수식 퍼즐",
+  description: "드래그앤드롭 토이: 칸반 보드와 사자성어 퍼즐",
 };
 
 export default function RootLayout({
